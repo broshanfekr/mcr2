@@ -14,33 +14,33 @@ import utils
 
 
 parser = argparse.ArgumentParser(description='Unsupervised Learning')
-parser.add_argument('--arch', type=str, default='resnet18',
+parser.add_argument('--arch', type=str, default='clip',
                     help='architecture for deep neural network (default: resnet18)')
-parser.add_argument('--fd', type=int, default=32,
+parser.add_argument('--fd', type=int, default=128,
                     help='dimension of feature dimension (default: 32)')
-parser.add_argument('--data', type=str, default='cifar10',
-                    help='dataset for training (default: CIFAR10)')
-parser.add_argument('--epo', type=int, default=50,
+parser.add_argument('--data', type=str, default='CIFAR10',
+                    help='dataset for training (default: CIFAR10, sampled_cifar10)')
+parser.add_argument('--epo', type=int, default=100,
                     help='number of epochs for training (default: 50)')
 parser.add_argument('--bs', type=int, default=1000,
                     help='input batch size for training (default: 1000)')
 parser.add_argument('--aug', type=int, default=50,
                     help='number of augmentations per mini-batch (default: 50)')
-parser.add_argument('--lr', type=float, default=0.001,
+parser.add_argument('--lr', type=float, default=0.1,
                     help='learning rate (default: 0.001)')
 parser.add_argument('--mom', type=float, default=0.9,
                     help='momentum (default: 0.9)')
 parser.add_argument('--wd', type=float, default=5e-4,
                     help='weight decay (default: 5e-4)')
-parser.add_argument('--gam1', type=float, default=1.0,
+parser.add_argument('--gam1', type=float, default=20.0,
                     help='gamma1 for tuning empirical loss (default: 1.0)')
-parser.add_argument('--gam2', type=float, default=10,
+parser.add_argument('--gam2', type=float, default=0.05,
                     help='gamma2 for tuning empirical loss (default: 10)')
-parser.add_argument('--eps', type=float, default=2,
+parser.add_argument('--eps', type=float, default=0.5,
                     help='eps squared (default: 2)')
 parser.add_argument('--tail', type=str, default='',
                     help='extra information to add to folder name')
-parser.add_argument('--transform', type=str, default='default',
+parser.add_argument('--transform', type=str, default='cifar',
                     help='transform applied to trainset (default: default')
 parser.add_argument('--sampler', type=str, default='random',
                     help='sampler used in augmentloader (default: random')
@@ -50,7 +50,7 @@ parser.add_argument('--pretrain_epo', type=int, default=None,
                     help='load pretrained epoch for assigning labels')
 parser.add_argument('--save_dir', type=str, default='./saved_models/',
                     help='base directory for saving PyTorch model. (default: ./saved_models/)')
-parser.add_argument('--data_dir', type=str, default='./data/',
+parser.add_argument('--data_dir', type=str, default='../data/cifar10',
                     help='base directory for saving PyTorch model. (default: ./data/)')
 args = parser.parse_args()
 
@@ -91,6 +91,7 @@ for epoch in range(args.epo):
         optimizer.step()
 
         utils.save_state(model_dir, epoch, step, loss.item(), *loss_empi, *loss_theo)
+        print("epoch is: {}, step is: {}".format(epoch, step))
         if step % 20 == 0:
             utils.save_ckpt(model_dir, net, epoch)
     scheduler.step()

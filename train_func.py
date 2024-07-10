@@ -12,6 +12,8 @@ from torch.utils.data import DataLoader
 from cluster import ElasticNetSubspaceClustering, clustering_accuracy
 import utils
 
+import MyDataset
+
 
 def load_architectures(name, dim):
     """Returns a network architecture.
@@ -52,6 +54,9 @@ def load_architectures(name, dim):
     elif _name == "resnet10mnist":
         from architectures.resnet_mnist import ResNet10MNIST
         net = ResNet10MNIST(dim)
+    elif _name == "clip":
+        from architectures.my_clip import MyClip
+        net = MyClip()
     else:
         raise NameError("{} not found in architectures.".format(name))
     net = torch.nn.DataParallel(net).cuda()
@@ -114,6 +119,11 @@ def load_trainset(name, transform=None, train=True, path="./data/"):
         else:
             trainset.targets = trainset.labels
             return trainset
+        
+    elif _name == "sampled_cifar10":
+        trainset = MyDataset.load_dataset(data_name=_name, path=path)
+        trainset.num_classes = 10
+        
     else:
         raise NameError("{} not found in trainset loader".format(name))
     return trainset
