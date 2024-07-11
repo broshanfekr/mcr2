@@ -8,6 +8,7 @@ import torch.nn
 import torchvision
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
+from torchvision.transforms import Compose, Resize, CenterCrop, ToTensor, Normalize, InterpolationMode
 
 from cluster import ElasticNetSubspaceClustering, clustering_accuracy
 import utils
@@ -56,7 +57,7 @@ def load_architectures(name, dim):
         net = ResNet10MNIST(dim)
     elif _name == "clip":
         from architectures.my_clip import MyClip
-        net = MyClip()
+        net = MyClip(input_dim=768, hidden_dim=4096, z_dim=128)
     else:
         raise NameError("{} not found in architectures.".format(name))
     net = torch.nn.DataParallel(net).cuda()
@@ -121,7 +122,7 @@ def load_trainset(name, transform=None, train=True, path="./data/"):
             return trainset
         
     elif _name == "sampled_cifar10":
-        trainset = MyDataset.load_dataset(data_name=_name, path=path)
+        trainset = MyDataset.load_dataset(data_name=_name, path=path, transform=transform)
         trainset.num_classes = 10
         
     else:
@@ -179,6 +180,18 @@ def load_transforms(name):
             transforms.ToTensor()])
     elif _name == "test":
         transform = transforms.ToTensor()
+    elif _name == "sampled_cifar":
+        BICUBIC = InterpolationMode.BICUBIC
+        transform = transforms.Compose([
+            Resize(224, interpolation=BICUBIC),
+            transforms.RandomResizedCrop(224),
+            transforms.RandomHorizontalFlip(p=0.5),
+            transforms.RandomApply([transforms.ColorJitter(0.4, 0.4, 0.4, 0.1)], p=0.8),
+            transforms.RandomGrayscale(p=0.2),
+            transforms.ToTensor(),
+            Normalize((0.48145466, 0.4578275, 0.40821073), (0.26862954, 0.26130258, 0.27577711)),
+            ])
+
     else:
         raise NameError("{} not found in transform loader".format(name))
     return transform

@@ -7,6 +7,7 @@ import numpy as np
 from PIL import Image
 import torchvision.transforms as transforms
 
+from torchvision.transforms import Compose, Resize, CenterCrop, ToTensor, Normalize, InterpolationMode
 
 class AugmentLoader:
     """Dataloader that includes augmentation functionality.
@@ -45,12 +46,14 @@ class AugmentLoader:
               batch_size,
               sampler="random",
               transforms=transforms.ToTensor(),
+              transforms_for_orig=transforms.ToTensor(),
               num_aug=0, 
               shuffle=False):
 
         self.dataset = dataset
         self.batch_size = batch_size
         self.transforms = transforms
+        self.transforms_for_orig = transforms_for_orig
         self.sampler = sampler
         self.num_aug = num_aug
         self.shuffle = shuffle
@@ -74,7 +77,7 @@ class AugmentLoader:
     def apply_augments(self, sample):
         if self.num_aug is None:
             return self.transforms(sample).unsqueeze(0)
-        batch_imgs = [transforms.ToTensor()(sample).unsqueeze(0)]
+        batch_imgs = [self.transforms_for_orig(sample).unsqueeze(0)]
         for _ in range(self.num_aug-1):
             transformed = self.transforms(sample)
             batch_imgs.append(transformed.unsqueeze(0))

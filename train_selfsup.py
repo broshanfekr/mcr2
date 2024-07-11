@@ -2,8 +2,11 @@ import argparse
 import os
 
 import numpy as np
+import torch
 import torch.optim as optim
 import torch.optim.lr_scheduler as lr_scheduler
+from torch.utils.data import DataLoader
+from torchvision.transforms import Compose, Resize, CenterCrop, ToTensor, Normalize, InterpolationMode
 
 
 import train_func as tf
@@ -11,6 +14,8 @@ from augmentloader import AugmentLoader
 from loss import MaximalCodingRateReduction
 import utils
 
+from torch.cuda.amp import GradScaler, autocast
+scaler = GradScaler()
 
 
 parser = argparse.ArgumentParser(description='Unsupervised Learning')
@@ -22,7 +27,7 @@ parser.add_argument('--data', type=str, default='CIFAR10',
                     help='dataset for training (default: CIFAR10, sampled_cifar10)')
 parser.add_argument('--epo', type=int, default=100,
                     help='number of epochs for training (default: 50)')
-parser.add_argument('--bs', type=int, default=1000,
+parser.add_argument('--bs', type=int, default=500,
                     help='input batch size for training (default: 1000)')
 parser.add_argument('--aug', type=int, default=50,
                     help='number of augmentations per mini-batch (default: 50)')
@@ -40,7 +45,7 @@ parser.add_argument('--eps', type=float, default=0.5,
                     help='eps squared (default: 2)')
 parser.add_argument('--tail', type=str, default='',
                     help='extra information to add to folder name')
-parser.add_argument('--transform', type=str, default='cifar',
+parser.add_argument('--transform', type=str, default='sampled_cifar',
                     help='transform applied to trainset (default: default')
 parser.add_argument('--sampler', type=str, default='random',
                     help='sampler used in augmentloader (default: random')
@@ -55,6 +60,23 @@ parser.add_argument('--data_dir', type=str, default='../data/cifar10',
 args = parser.parse_args()
 
 
+def test_step(net, transforms, args):
+    net = net.eval()
+    trainset = tf.load_trainset(args.data, path=args.data_dir, transform=transforms)
+    new_labels = trainset.targets
+    trainloader = DataLoader(trainset, batch_size=200)
+    
+    features = []
+    labels = []
+    for step, (batch_imgs, batch_lbls) in enumerate(trainloader):
+        with autocast(enabled=True):
+            batch_features = net(batch_imgs.cuda())
+            
+        features.append(batch_features.cpu().detach())
+        labels.append(batch_lbls)
+    return torch.cat(features), torch.cat(labels)
+    
+
 ## Pipelines Setup
 model_dir = os.path.join(args.save_dir,
                'selfsup_{}+{}_{}_epo{}_bs{}_aug{}+{}_lr{}_mom{}_wd{}_gam1{}_gam2{}_eps{}{}'.format(
@@ -68,10 +90,22 @@ if args.pretrain_dir is not None:
     utils.update_params(model_dir, args.pretrain_dir)  
 else:
     net = tf.load_architectures(args.arch, args.fd)
+    
 transforms = tf.load_transforms(args.transform)
+transforms_for_orig_data = Compose([
+            Resize(224, interpolation=InterpolationMode.BICUBIC),
+            CenterCrop(224),
+            ToTensor(),
+            Normalize((0.48145466, 0.4578275, 0.40821073), 
+                      (0.26862954, 0.26130258, 0.27577711)),
+        ])
+
+test_step(net, transforms_for_orig_data, args=args)
+
 trainset = tf.load_trainset(args.data, path=args.data_dir)
 trainloader = AugmentLoader(trainset,
                             transforms=transforms,
+                            transforms_for_orig=transforms_for_orig_data,
                             sampler=args.sampler,
                             batch_size=args.bs,
                             num_aug=args.aug)
@@ -84,7 +118,10 @@ utils.save_params(model_dir, vars(args))
 ## Training
 for epoch in range(args.epo):
     for step, (batch_imgs, _, batch_idx) in enumerate(trainloader):
-        batch_features = net(batch_imgs.cuda())
+        
+        with autocast(enabled=True):
+            batch_features = net(batch_imgs.cuda())
+            
         loss, loss_empi, loss_theo = criterion(batch_features, batch_idx)
         optimizer.zero_grad()
         loss.backward()
@@ -96,4 +133,6 @@ for epoch in range(args.epo):
             utils.save_ckpt(model_dir, net, epoch)
     scheduler.step()
     utils.save_ckpt(model_dir, net, epoch)
+    
+    # test_step
 print("training complete.")

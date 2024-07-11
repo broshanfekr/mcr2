@@ -23,31 +23,28 @@ def save_var(save_path, variable):
 
 
 class MyCustomDataset(Dataset):
-    def __init__(self, imgs, labels):
+    def __init__(self, imgs, labels, transform):
         self.images = imgs
         self.targets = labels
-
-        BICUBIC = InterpolationMode.BICUBIC
-        self.transform = Compose([
-                Resize(224, interpolation=BICUBIC),
-                CenterCrop(224),
-                ToTensor(),
-                Normalize((0.48145466, 0.4578275, 0.40821073), (0.26862954, 0.26130258, 0.27577711)),
-            ])
-
+        self.transform = transform
+        
     def __len__(self):
         return self.images.shape[0]
 
     def __getitem__(self, idx):
         tmp_img = self.images[idx]
         tmp_label = self.targets[idx]
+        
+        if self.transform:
+            tmp_img = self.transform(tmp_img)
+        
         return tmp_img, tmp_label
 
 
-def load_dataset(data_name, train=True, path="./data"):
+def load_dataset(data_name, transform=None, path="./data"):
     if data_name == "sampled_cifar10":
         file_path = os.path.join(path, "", "cifar10_5000samples.pckl")
         imgs, labels, X = load_var(file_path)
-        trainset = MyCustomDataset(imgs=imgs, labels=labels)
+        trainset = MyCustomDataset(imgs=imgs, labels=labels, transform=transform)
 
     return trainset
