@@ -29,7 +29,7 @@ class MyCustomDataset(Dataset):
         self.transform = transform
         
     def __len__(self):
-        return self.images.shape[0]
+        return len(self.images)
 
     def __getitem__(self, idx):
         tmp_img = self.images[idx]
