@@ -7,6 +7,7 @@ import time
 import os
 from scipy import sparse
 from sklearn import cluster
+from sklearn.cluster import KMeans
 from sklearn.base import BaseEstimator, ClusterMixin
 from sklearn.decomposition import sparse_encode
 from sklearn.linear_model import orthogonal_mp
@@ -626,11 +627,14 @@ def kmeans(args, train_features, train_labels, test_features=None, test_labels=N
     clustermd.fit(train_features)
     plabels = clustermd.labels_
     acc = clustering_accuracy(train_labels, plabels)
-    print('KMeans: {}'.format(acc))
+    nmi = normalized_mutual_info_score(labels_true=train_labels, labels_pred=plabels)
+    ari = adjusted_rand_score(labels_true=train_labels, labels_pred=plabels) 
+    # print('KMeans: {}'.format(acc))
 
     if args.save:
         np.save(os.path.join(args.model_dir, 'plabels', f'kmeans_epoch{args.epoch}.npy'), plabels)
-    return acc, plabels
+
+    return {"acc": acc, "nmi": nmi, "ari": ari}, plabels
 
 
 def ensc(args, train_features, train_labels, test_features=None, test_labels=None):

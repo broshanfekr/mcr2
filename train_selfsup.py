@@ -57,14 +57,16 @@ def test_step(net, transforms, args):
     num_classes = len(np.unique(labels))
     args.n = num_classes
     args.save = False
-    res, plabels = cluster.ensc(args=args, train_features=features, train_labels=labels)
-    
+
+    ensc_res, ensc_plabels = cluster.ensc(args=args, train_features=features, train_labels=labels)
+    kmeans_res, kmeans_plabels = cluster.kmeans(args=args, train_features=features, train_labels=labels)
+
     # sc = SpectralClustering(n_clusters=num_classes, assign_labels='discretize').fit(features)
     # z_based_label_list = sc.labels_
     
     # nmi = normalized_mutual_info_score(labels, z_based_label_list)
         
-    return res
+    return ensc_res, kmeans_res
 
 
 parser = argparse.ArgumentParser(description='Unsupervised Learning')
@@ -166,21 +168,25 @@ if __name__ == "__main__":
         else:
             train_bar = trainloader
         
-        for step, (batch_imgs, _, batch_idx) in enumerate(train_bar):
-            with autocast(enabled=True):
-                batch_features = net(batch_imgs.cuda())
+        # for step, (batch_imgs, _, batch_idx) in enumerate(train_bar):
+        #     with autocast(enabled=True):
+        #         batch_features = net(batch_imgs.cuda())
                 
-            loss, loss_empi, loss_theo = criterion(batch_features, batch_idx)
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
+        #     loss, loss_empi, loss_theo = criterion(batch_features, batch_idx)
+        #     optimizer.zero_grad()
+        #     loss.backward()
+        #     optimizer.step()
 
-            utils.save_state(model_dir, epoch, step, loss.item(), *loss_empi, *loss_theo)
+        #     utils.save_state(model_dir, epoch, step, loss.item(), *loss_empi, *loss_theo)
         
-        if epoch % 5 == 0:
-            res = test_step(net, transforms_for_orig_data, args=args)    
-            row_text = "epoch is: {}, loss is: {:.4f}, NMI is: {:.4f}, ARI is: {:.4f}, ACC is: {:.4f}"
-            print(row_text.format(epoch, loss.item(), res["nmi"], res["ari"], res["acc"]))
+        if True or epoch % 5 == 0:
+            ensc_res, kmeans_res = test_step(net, transforms_for_orig_data, args=args)    
+            row_text = "ensc   -> epoch is: {}, loss is: {:.4f}, NMI is: {:.4f}, ARI is: {:.4f}, ACC is: {:.4f}"
+            print(row_text.format(epoch, 0, ensc_res["nmi"], ensc_res["ari"], ensc_res["acc"]))
+
+            row_text = "kmeans -> epoch is: {}, loss is: {:.4f}, NMI is: {:.4f}, ARI is: {:.4f}, ACC is: {:.4f}"
+            print(row_text.format(epoch, 0, kmeans_res["nmi"], kmeans_res["ari"], kmeans_res["acc"]))
+
             utils.save_ckpt(model_dir, net, epoch)
             
         scheduler.step()
