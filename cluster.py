@@ -4,7 +4,7 @@ import numpy as np
 import progressbar
 # import spams
 import time
-
+import os
 from scipy import sparse
 from sklearn import cluster
 from sklearn.base import BaseEstimator, ClusterMixin
@@ -13,7 +13,11 @@ from sklearn.linear_model import orthogonal_mp
 from sklearn.neighbors import kneighbors_graph
 from sklearn.preprocessing import normalize
 from sklearn.utils import check_random_state, check_array, check_symmetric
+from sklearn.metrics.cluster import normalized_mutual_info_score
+from sklearn.metrics.cluster import adjusted_rand_score
 
+from sklearn.metrics.cluster import _supervised
+from scipy.optimize import linear_sum_assignment
 
 class SelfRepresentation(BaseEstimator, ClusterMixin):
     """Base class for self-representation based subspace clustering.
@@ -604,9 +608,9 @@ def clustering_accuracy(labels_true, labels_pred):
     accuracy : float
        return clustering accuracy in the range of [0, 1]
     """
-    labels_true, labels_pred = supervised.check_clusterings(labels_true, labels_pred)
+    labels_true, labels_pred = _supervised.check_clusterings(labels_true, labels_pred)
     # value = supervised.contingency_matrix(labels_true, labels_pred, sparse=False)
-    value = supervised.contingency_matrix(labels_true, labels_pred)
+    value = _supervised.contingency_matrix(labels_true, labels_pred)
     [r, c] = linear_sum_assignment(-value)
     return value[r, c].sum() / len(labels_true)
 
@@ -641,10 +645,12 @@ def ensc(args, train_features, train_labels, test_features=None, test_labels=Non
     clustermd.fit(train_features)
     plabels = clustermd.labels_
     acc = clustering_accuracy(train_labels, plabels)
-    print('EnSC: {}'.format(acc))
+    nmi = normalized_mutual_info_score(labels_true=train_labels, labels_pred=plabels)
+    ari = adjusted_rand_score(labels_true=train_labels, labels_pred=plabels)  
+    # print('EnSC acc: {}, nmi: {}, ari: {}'.format(acc, nmi, ari))
 
     if args.save:
         np.save(os.path.join(args.model_dir, 'plabels', f'ensc_epoch{args.epoch}.npy'), plabels)
-    return acc, plabels
+    return {"acc": acc, "nmi": nmi, "ari": ari}, plabels
 
     

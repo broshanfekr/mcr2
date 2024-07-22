@@ -93,19 +93,22 @@ def ensc(args, train_features, train_labels):
         tau (float): tau parameter in EnSC
 
     """
-    return cluster.ensc(args, train_features, train_labels)
+    res, plabels = cluster.ensc(args, train_features, train_labels)
+    print('EnSC acc: {}, nmi: {}, ari: {}'.format(res["acc"], res["nmi"], res["ari"]))
+    return res, plabels
 
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Evaluation')
-    parser.add_argument('--model_dir', type=str, help='base directory for saving PyTorch model.')
+    parser.add_argument('--model_dir', type=str, default="saved_models/selfsup_resnet18ctrl+128_cifar10_epo100_bs1000_aug50+cifar_lr0.1_mom0.9_wd0.0005_gam120.0_gam20.05_eps0.5"
+                        ,help='base directory for saving PyTorch model.')
     parser.add_argument('--svm', help='evaluate using SVM', action='store_true')
     parser.add_argument('--knn', help='evaluate using kNN measuring cosine similarity', action='store_true')
     parser.add_argument('--nearsub', help='evaluate using Nearest Subspace', action='store_true')
     parser.add_argument('--kmeans', help='evaluate using KMeans', action='store_true')
     parser.add_argument('--ensc', help='evaluate using Elastic Net Subspace Clustering', action='store_true')
-    parser.add_argument('--epoch', type=int, default=None, help='which epoch for evaluation')
+    parser.add_argument('--epoch', type=int, default=99, help='which epoch for evaluation')
 
     parser.add_argument('--k', type=int, default=5, help='top k components for kNN')
     parser.add_argument('--n', type=int, default=10, help='number of clusters for cluster (default: 10)')
@@ -125,7 +128,7 @@ if __name__ == '__main__':
     
     # get train features and labels
     train_transforms = tf.load_transforms('test')
-    trainset = tf.load_trainset(params['data'], train_transforms, train=True, path=args.data_dir)
+    trainset = tf.load_trainset(params['data'], train_transforms, train=False, path=args.data_dir)
     if 'lcr' in params.keys(): # supervised corruption case
         trainset = tf.corrupt_labels(params['corrupt'])(trainset, params['lcr'], params['lcs'])
     new_labels = trainset.targets
@@ -146,5 +149,5 @@ if __name__ == '__main__':
         nearsub(args, train_features, train_labels, test_features, test_labels)
     if args.kmeans:
         kmeans(args, train_features, train_labels)
-    if args.ensc:
+    if args.ensc or True:
         ensc(args, train_features, train_labels)

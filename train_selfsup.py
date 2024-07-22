@@ -15,6 +15,8 @@ from augmentloader import AugmentLoader
 from loss import MaximalCodingRateReduction
 import utils
 import pickle
+import cluster
+from tqdm import tqdm
 
 from torch.cuda.amp import GradScaler, autocast
 scaler = GradScaler()
@@ -36,7 +38,8 @@ def save_var(save_path, variable):
 
 def test_step(net, transforms, args):
     net.eval()
-    trainset = tf.load_trainset(args.data, path=args.data_dir, transform=transforms)
+    trainset = tf.load_trainset(args.data, path=args.data_dir, 
+                                transform=transforms, train=args.is_train_set)
     new_labels = trainset.targets
     trainloader = DataLoader(trainset, batch_size=200)
     
@@ -52,25 +55,28 @@ def test_step(net, transforms, args):
     features = torch.cat(features).detach().cpu().numpy()
     labels = torch.cat(labels).detach().cpu().numpy()
     num_classes = len(np.unique(labels))
+    args.n = num_classes
+    args.save = False
+    res, plabels = cluster.ensc(args=args, train_features=features, train_labels=labels)
     
-    sc = SpectralClustering(n_clusters=num_classes, assign_labels='discretize').fit(features)
-    z_based_label_list = sc.labels_
+    # sc = SpectralClustering(n_clusters=num_classes, assign_labels='discretize').fit(features)
+    # z_based_label_list = sc.labels_
     
-    nmi = normalized_mutual_info_score(labels, z_based_label_list)
+    # nmi = normalized_mutual_info_score(labels, z_based_label_list)
         
-    return nmi
+    return res
 
 
 parser = argparse.ArgumentParser(description='Unsupervised Learning')
-parser.add_argument('--arch', type=str, default='clip',
-                    help='architecture for deep neural network (default: resnet18)')
+parser.add_argument('--arch', type=str, default='resnet18ctrl',
+                    help='architecture for deep neural network (default: resnet18, clip)')
 parser.add_argument('--fd', type=int, default=128,
                     help='dimension of feature dimension (default: 32)')
-parser.add_argument('--data', type=str, default='sampled_cifar10',
+parser.add_argument('--data', type=str, default='cifar10',
                     help='dataset for training (default: CIFAR10, sampled_cifar10)')
-parser.add_argument('--epo', type=int, default=100,
+parser.add_argument('--epo', type=int, default=120,
                     help='number of epochs for training (default: 50)')
-parser.add_argument('--bs', type=int, default=500,
+parser.add_argument('--bs', type=int, default=1000,
                     help='input batch size for training (default: 1000)')
 parser.add_argument('--aug', type=int, default=50,
                     help='number of augmentations per mini-batch (default: 50)')
@@ -88,8 +94,8 @@ parser.add_argument('--eps', type=float, default=0.5,
                     help='eps squared (default: 2)')
 parser.add_argument('--tail', type=str, default='',
                     help='extra information to add to folder name')
-parser.add_argument('--transform', type=str, default='sampled_cifar',
-                    help='transform applied to trainset (default: default')
+parser.add_argument('--transform', type=str, default='cifar',
+                    help='transform applied to trainset (default: default, sampled_cifar')
 parser.add_argument('--sampler', type=str, default='random',
                     help='sampler used in augmentloader (default: random')
 parser.add_argument('--pretrain_dir', type=str, default=None,
@@ -100,6 +106,13 @@ parser.add_argument('--save_dir', type=str, default='./saved_models/',
                     help='base directory for saving PyTorch model. (default: ./saved_models/)')
 parser.add_argument('--data_dir', type=str, default='../data/cifar10',
                     help='base directory for saving PyTorch model. (default: ./data/)')
+
+parser.add_argument('--gam', type=int, default=300, 
+                    help='gamma paramter for subspace clustering (default: 100)')
+parser.add_argument('--tau', type=float, default=1.0,
+                    help='tau paramter for subspace clustering (default: 1.0)')
+parser.add_argument("--verbose", type=bool, default=True)
+parser.add_argument("--is_train_set", type=bool, default=False)
 args = parser.parse_args()
 
 
@@ -119,15 +132,19 @@ if __name__ == "__main__":
         net = tf.load_architectures(args.arch, args.fd)
         
     transforms = tf.load_transforms(args.transform)
-    transforms_for_orig_data = Compose([
-                Resize(224, interpolation=InterpolationMode.BICUBIC),
-                CenterCrop(224),
-                ToTensor(),
-                Normalize((0.48145466, 0.4578275, 0.40821073), 
-                        (0.26862954, 0.26130258, 0.27577711)),
-            ])
+    
+    if args.arch == "clip":
+        transforms_for_orig_data = Compose([
+                    Resize(224, interpolation=InterpolationMode.BICUBIC),
+                    CenterCrop(224),
+                    ToTensor(),
+                    Normalize((0.48145466, 0.4578275, 0.40821073), 
+                            (0.26862954, 0.26130258, 0.27577711)),
+                ])
+    else:
+        transforms_for_orig_data = Compose([ToTensor()])
 
-    trainset = tf.load_trainset(args.data, path=args.data_dir)
+    trainset = tf.load_trainset(args.data, path=args.data_dir, train=args.is_train_set)
     trainloader = AugmentLoader(trainset,
                                 transforms=transforms,
                                 transforms_for_orig=transforms_for_orig_data,
@@ -143,7 +160,13 @@ if __name__ == "__main__":
     ## Training
     for epoch in range(args.epo):      
         net.train()
-        for step, (batch_imgs, _, batch_idx) in enumerate(trainloader):
+        
+        if args.verbose:
+            train_bar = tqdm(trainloader, desc="epoch {}".format(epoch))
+        else:
+            train_bar = trainloader
+        
+        for step, (batch_imgs, _, batch_idx) in enumerate(train_bar):
             with autocast(enabled=True):
                 batch_features = net(batch_imgs.cuda())
                 
@@ -154,9 +177,12 @@ if __name__ == "__main__":
 
             utils.save_state(model_dir, epoch, step, loss.item(), *loss_empi, *loss_theo)
         
-        nmi = test_step(net, transforms_for_orig_data, args=args)    
-        print("epoch is: {}, NMI is: {}".format(epoch, nmi))
-        utils.save_ckpt(model_dir, net, epoch)
+        if epoch % 5 == 0:
+            res = test_step(net, transforms_for_orig_data, args=args)    
+            row_text = "epoch is: {}, loss is: {:.4f}, NMI is: {:.4f}, ARI is: {:.4f}, ACC is: {:.4f}"
+            print(row_text.format(epoch, loss.item(), res["nmi"], res["ari"], res["acc"]))
+            utils.save_ckpt(model_dir, net, epoch)
+            
         scheduler.step()
                 
     print("The end")
