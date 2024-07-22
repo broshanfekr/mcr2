@@ -18,8 +18,13 @@ import pickle
 import cluster
 from tqdm import tqdm
 
-from torch.cuda.amp import GradScaler, autocast
-scaler = GradScaler()
+# from torch.cuda.amp import GradScaler, autocast
+# scaler = GradScaler()
+
+
+import warnings   
+# Settings the warnings to be ignored 
+warnings.filterwarnings('ignore') 
 
 
 def load_var(load_path):
@@ -46,8 +51,11 @@ def test_step(net, transforms, args):
     features = []
     labels = []
     for step, (batch_imgs, batch_lbls) in enumerate(trainloader):
-        with autocast(enabled=True):
-            batch_features = net(batch_imgs.cuda())
+
+        # with autocast(enabled=True):
+        #     batch_features = net(batch_imgs.cuda())
+
+        batch_features = net(batch_imgs.cuda())
             
         features.append(batch_features.cpu().detach())
         labels.append(batch_lbls)
@@ -168,24 +176,27 @@ if __name__ == "__main__":
         else:
             train_bar = trainloader
         
-        # for step, (batch_imgs, _, batch_idx) in enumerate(train_bar):
-        #     with autocast(enabled=True):
-        #         batch_features = net(batch_imgs.cuda())
-                
-        #     loss, loss_empi, loss_theo = criterion(batch_features, batch_idx)
-        #     optimizer.zero_grad()
-        #     loss.backward()
-        #     optimizer.step()
+        for step, (batch_imgs, _, batch_idx) in enumerate(train_bar):
 
-        #     utils.save_state(model_dir, epoch, step, loss.item(), *loss_empi, *loss_theo)
+            # with autocast(enabled=True):
+            #     batch_features = net(batch_imgs.cuda())
+
+            batch_features = net(batch_imgs.cuda())
+                
+            loss, loss_empi, loss_theo = criterion(batch_features, batch_idx)
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+
+            utils.save_state(model_dir, epoch, step, loss.item(), *loss_empi, *loss_theo)
         
         if True or epoch % 5 == 0:
             ensc_res, kmeans_res = test_step(net, transforms_for_orig_data, args=args)    
             row_text = "ensc   -> epoch is: {}, loss is: {:.4f}, NMI is: {:.4f}, ARI is: {:.4f}, ACC is: {:.4f}"
-            print(row_text.format(epoch, 0, ensc_res["nmi"], ensc_res["ari"], ensc_res["acc"]))
+            print(row_text.format(epoch, loss.item(), ensc_res["nmi"], ensc_res["ari"], ensc_res["acc"]))
 
             row_text = "kmeans -> epoch is: {}, loss is: {:.4f}, NMI is: {:.4f}, ARI is: {:.4f}, ACC is: {:.4f}"
-            print(row_text.format(epoch, 0, kmeans_res["nmi"], kmeans_res["ari"], kmeans_res["acc"]))
+            print(row_text.format(epoch, loss.item(), kmeans_res["nmi"], kmeans_res["ari"], kmeans_res["acc"]))
 
             utils.save_ckpt(model_dir, net, epoch)
             
