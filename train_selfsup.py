@@ -98,7 +98,7 @@ parser.add_argument('--wd', type=float, default=5e-4,
                     help='weight decay (default: 5e-4)')
 parser.add_argument('--gam1', type=float, default=20.0,
                     help='gamma1 for tuning empirical loss (default: 1.0)')
-parser.add_argument('--gam2', type=float, default=0.05,
+parser.add_argument('--gam2', type=float, default=15.0,
                     help='gamma2 for tuning empirical loss (default: 10)')
 parser.add_argument('--eps', type=float, default=0.5,
                     help='eps squared (default: 2)')

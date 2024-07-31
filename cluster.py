@@ -159,7 +159,27 @@ def active_support_elastic_net(X, y, alpha, tau=1.0, algorithm='spams', support_
                              lambda1=tau*alpha, lambda2=(1.0-tau)*alpha)
             cs = np.asarray(cs.todense()).T
         else:
-            cs = sparse_encode(y, Xs, algorithm=algorithm, alpha=alpha)
+            try:
+                cs = sparse_encode(y, Xs, algorithm=algorithm, alpha=alpha)
+            except:
+                import pickle
+                def load_var(load_path):
+                    file = open(load_path, 'rb')
+                    variable = pickle.load(file)
+                    file.close()
+                    return variable
+
+
+                def save_var(save_path, variable):
+                    file = open(save_path, 'wb')
+                    pickle.dump(variable, file)
+                    print("variable saved.")
+                    file.close()
+
+                save_var("myvar.pckl", [y, Xs, algorithm, alpha])
+
+
+                suse = 5
       
         delta = (y - np.dot(cs, Xs)) / alpha
 		
