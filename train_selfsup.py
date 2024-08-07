@@ -84,7 +84,7 @@ parser.add_argument('--fd', type=int, default=128,
                     help='dimension of feature dimension (default: 32)')
 parser.add_argument('--data', type=str, default='cifar10',
                     help='dataset for training (default: CIFAR10, sampled_cifar10)')
-parser.add_argument('--epo', type=int, default=120,
+parser.add_argument('--epo', type=int, default=50,
                     help='number of epochs for training (default: 50)')
 parser.add_argument('--bs', type=int, default=1000,
                     help='input batch size for training (default: 1000)')
@@ -98,7 +98,7 @@ parser.add_argument('--wd', type=float, default=5e-4,
                     help='weight decay (default: 5e-4)')
 parser.add_argument('--gam1', type=float, default=20.0,
                     help='gamma1 for tuning empirical loss (default: 1.0)')
-parser.add_argument('--gam2', type=float, default=15.0,
+parser.add_argument('--gam2', type=float, default=0.05,
                     help='gamma2 for tuning empirical loss (default: 10)')
 parser.add_argument('--eps', type=float, default=0.5,
                     help='eps squared (default: 2)')
@@ -108,9 +108,9 @@ parser.add_argument('--transform', type=str, default='cifar',
                     help='transform applied to trainset (default: default, sampled_cifar')
 parser.add_argument('--sampler', type=str, default='random',
                     help='sampler used in augmentloader (default: random')
-parser.add_argument('--pretrain_dir', type=str, default=None,
+parser.add_argument('--pretrain_dir', type=str, default="saved_models/selfsup_resnet18ctrl+128_cifar10_epo120_bs1000_aug50+cifar_lr0.1_mom0.9_wd0.0005_gam120.0_gam20.05_eps0.5",
                     help='load pretrained checkpoint for assigning labels')
-parser.add_argument('--pretrain_epo', type=int, default=None,
+parser.add_argument('--pretrain_epo', type=int, default=115,
                     help='load pretrained epoch for assigning labels')
 parser.add_argument('--save_dir', type=str, default='./saved_models/',
                     help='base directory for saving PyTorch model. (default: ./saved_models/)')
@@ -122,7 +122,7 @@ parser.add_argument('--gam', type=int, default=300,
 parser.add_argument('--tau', type=float, default=1.0,
                     help='tau paramter for subspace clustering (default: 1.0)')
 parser.add_argument("--verbose", type=bool, default=True)
-parser.add_argument("--is_train_set", type=bool, default=False)
+parser.add_argument("--is_train_set", type=bool, default=True)
 args = parser.parse_args()
 
 
@@ -190,7 +190,7 @@ if __name__ == "__main__":
 
             utils.save_state(model_dir, epoch, step, loss.item(), *loss_empi, *loss_theo)
         
-        if True or epoch % 5 == 0:
+        if epoch % 5 == 0:
             ensc_res, kmeans_res = test_step(net, transforms_for_orig_data, args=args)    
             row_text = "ensc   -> epoch is: {}, loss is: {:.4f}, NMI is: {:.4f}, ARI is: {:.4f}, ACC is: {:.4f}"
             print(row_text.format(epoch, loss.item(), ensc_res["nmi"], ensc_res["ari"], ensc_res["acc"]))
@@ -201,5 +201,14 @@ if __name__ == "__main__":
             utils.save_ckpt(model_dir, net, epoch)
             
         scheduler.step()
+
+    ensc_res, kmeans_res = test_step(net, transforms_for_orig_data, args=args)    
+    row_text = "ensc   -> epoch is: {}, loss is: {:.4f}, NMI is: {:.4f}, ARI is: {:.4f}, ACC is: {:.4f}"
+    print(row_text.format(epoch, loss.item(), ensc_res["nmi"], ensc_res["ari"], ensc_res["acc"]))
+
+    row_text = "kmeans -> epoch is: {}, loss is: {:.4f}, NMI is: {:.4f}, ARI is: {:.4f}, ACC is: {:.4f}"
+    print(row_text.format(epoch, loss.item(), kmeans_res["nmi"], kmeans_res["ari"], kmeans_res["acc"]))
+
+    utils.save_ckpt(model_dir, net, epoch)
                 
     print("The end")
