@@ -84,7 +84,7 @@ parser.add_argument('--fd', type=int, default=128,
                     help='dimension of feature dimension (default: 32)')
 parser.add_argument('--data', type=str, default='cifar10',
                     help='dataset for training (default: CIFAR10, sampled_cifar10)')
-parser.add_argument('--epo', type=int, default=50,
+parser.add_argument('--epo', type=int, default=250,
                     help='number of epochs for training (default: 50)')
 parser.add_argument('--bs', type=int, default=1000,
                     help='input batch size for training (default: 1000)')
@@ -108,7 +108,7 @@ parser.add_argument('--transform', type=str, default='cifar',
                     help='transform applied to trainset (default: default, sampled_cifar')
 parser.add_argument('--sampler', type=str, default='random',
                     help='sampler used in augmentloader (default: random')
-parser.add_argument('--pretrain_dir', type=str, default="saved_models/selfsup_resnet18ctrl+128_cifar10_epo120_bs1000_aug50+cifar_lr0.1_mom0.9_wd0.0005_gam120.0_gam20.05_eps0.5",
+parser.add_argument('--pretrain_dir', type=str, default=None,
                     help='load pretrained checkpoint for assigning labels')
 parser.add_argument('--pretrain_epo', type=int, default=115,
                     help='load pretrained epoch for assigning labels')
@@ -167,6 +167,8 @@ if __name__ == "__main__":
     scheduler = lr_scheduler.MultiStepLR(optimizer, [30, 60], gamma=0.1)
     utils.save_params(model_dir, vars(args))
 
+    best_nmi = 0
+
     ## Training
     for epoch in range(args.epo):      
         net.train()
@@ -198,7 +200,9 @@ if __name__ == "__main__":
             row_text = "kmeans -> epoch is: {}, loss is: {:.4f}, NMI is: {:.4f}, ARI is: {:.4f}, ACC is: {:.4f}"
             print(row_text.format(epoch, loss.item(), kmeans_res["nmi"], kmeans_res["ari"], kmeans_res["acc"]))
 
-            utils.save_ckpt(model_dir, net, epoch)
+            if ensc_res["nmi"] > best_nmi:
+                best_nmi = best_nmi
+                utils.save_ckpt(model_dir, net, epoch="best")
             
         scheduler.step()
 
