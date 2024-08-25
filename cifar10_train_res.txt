@@ -1,0 +1,116 @@
+project dir: ./saved_models/selfsup_resnet18ctrl+128_cifar10_epo200_bs1000_aug50+cifar_lr0.1_mom0.9_wd0.0005_gam120.0_gam20.05_eps0.5
+Files already downloaded and verified
+Files already downloaded and verified
+ensc   -> epoch is: 0, loss is: 2.1236, NMI is: 0.2763, ARI is: 0.1955, ACC is: 0.3936
+kmeans -> epoch is: 0, loss is: 2.1236, NMI is: 0.2504, ARI is: 0.1490, ACC is: 0.3416
+Files already downloaded and verified
+ensc   -> epoch is: 5, loss is: 1.9767, NMI is: 0.4289, ARI is: 0.2887, ACC is: 0.5021
+kmeans -> epoch is: 5, loss is: 1.9767, NMI is: 0.3964, ARI is: 0.2306, ACC is: 0.4796
+Files already downloaded and verified
+ensc   -> epoch is: 10, loss is: 1.9908, NMI is: 0.4421, ARI is: 0.3020, ACC is: 0.5109
+kmeans -> epoch is: 10, loss is: 1.9908, NMI is: 0.4341, ARI is: 0.2869, ACC is: 0.5004
+Files already downloaded and verified
+ensc   -> epoch is: 15, loss is: 1.9797, NMI is: 0.4504, ARI is: 0.3090, ACC is: 0.5069
+kmeans -> epoch is: 15, loss is: 1.9797, NMI is: 0.4371, ARI is: 0.2646, ACC is: 0.4943
+Files already downloaded and verified
+ensc   -> epoch is: 20, loss is: 1.9430, NMI is: 0.4509, ARI is: 0.3095, ACC is: 0.5228
+kmeans -> epoch is: 20, loss is: 1.9430, NMI is: 0.4418, ARI is: 0.2638, ACC is: 0.4915
+Files already downloaded and verified
+ensc   -> epoch is: 25, loss is: 2.0183, NMI is: 0.4561, ARI is: 0.3154, ACC is: 0.5101
+kmeans -> epoch is: 25, loss is: 2.0183, NMI is: 0.4254, ARI is: 0.2673, ACC is: 0.4967
+Files already downloaded and verified
+ensc   -> epoch is: 30, loss is: 1.7937, NMI is: 0.5104, ARI is: 0.3571, ACC is: 0.5524
+kmeans -> epoch is: 30, loss is: 1.7937, NMI is: 0.5211, ARI is: 0.3201, ACC is: 0.5563
+Files already downloaded and verified
+ensc   -> epoch is: 35, loss is: 1.7903, NMI is: 0.5295, ARI is: 0.3683, ACC is: 0.5554
+kmeans -> epoch is: 35, loss is: 1.7903, NMI is: 0.5457, ARI is: 0.3292, ACC is: 0.5871
+Files already downloaded and verified
+ensc   -> epoch is: 40, loss is: 1.8578, NMI is: 0.5283, ARI is: 0.3539, ACC is: 0.5370
+kmeans -> epoch is: 40, loss is: 1.8578, NMI is: 0.5219, ARI is: 0.2834, ACC is: 0.4981
+Files already downloaded and verified
+ensc   -> epoch is: 45, loss is: 1.8074, NMI is: 0.5325, ARI is: 0.3483, ACC is: 0.5046
+kmeans -> epoch is: 45, loss is: 1.8074, NMI is: 0.5436, ARI is: 0.3234, ACC is: 0.5276
+Files already downloaded and verified
+ensc   -> epoch is: 50, loss is: 1.7999, NMI is: 0.5286, ARI is: 0.3316, ACC is: 0.5109
+kmeans -> epoch is: 50, loss is: 1.7999, NMI is: 0.5026, ARI is: 0.2729, ACC is: 0.4808
+Files already downloaded and verified
+ensc   -> epoch is: 55, loss is: 1.7895, NMI is: 0.5268, ARI is: 0.3287, ACC is: 0.4756
+kmeans -> epoch is: 55, loss is: 1.7895, NMI is: 0.5214, ARI is: 0.3061, ACC is: 0.5055
+Files already downloaded and verified
+ensc   -> epoch is: 60, loss is: 1.7157, NMI is: 0.5720, ARI is: 0.3854, ACC is: 0.5456
+kmeans -> epoch is: 60, loss is: 1.7157, NMI is: 0.5803, ARI is: 0.3569, ACC is: 0.5784
+Files already downloaded and verified
+ensc   -> epoch is: 65, loss is: 1.5951, NMI is: 0.5630, ARI is: 0.3446, ACC is: 0.4919
+kmeans -> epoch is: 65, loss is: 1.5951, NMI is: 0.5443, ARI is: 0.2853, ACC is: 0.5007
+Files already downloaded and verified
+ensc   -> epoch is: 70, loss is: 1.6865, NMI is: 0.5648, ARI is: 0.3449, ACC is: 0.4899
+kmeans -> epoch is: 70, loss is: 1.6865, NMI is: 0.5694, ARI is: 0.3129, ACC is: 0.5299
+Files already downloaded and verified
+ensc   -> epoch is: 75, loss is: 1.6141, NMI is: 0.5565, ARI is: 0.3465, ACC is: 0.4857
+kmeans -> epoch is: 75, loss is: 1.6141, NMI is: 0.5182, ARI is: 0.2359, ACC is: 0.4123
+Files already downloaded and verified
+ensc   -> epoch is: 80, loss is: 1.7098, NMI is: 0.5643, ARI is: 0.3428, ACC is: 0.4910
+kmeans -> epoch is: 80, loss is: 1.7098, NMI is: 0.5636, ARI is: 0.3145, ACC is: 0.5480
+Files already downloaded and verified
+ensc   -> epoch is: 85, loss is: 1.5903, NMI is: 0.5942, ARI is: 0.4197, ACC is: 0.5614
+kmeans -> epoch is: 85, loss is: 1.5903, NMI is: 0.4670, ARI is: 0.1640, ACC is: 0.4367
+Files already downloaded and verified
+ensc   -> epoch is: 90, loss is: 1.7138, NMI is: 0.5610, ARI is: 0.3422, ACC is: 0.4794
+kmeans -> epoch is: 90, loss is: 1.7138, NMI is: 0.4894, ARI is: 0.1819, ACC is: 0.4375
+Files already downloaded and verified
+ensc   -> epoch is: 95, loss is: 1.6605, NMI is: 0.5558, ARI is: 0.3403, ACC is: 0.4701
+kmeans -> epoch is: 95, loss is: 1.6605, NMI is: 0.5428, ARI is: 0.2873, ACC is: 0.4923
+Files already downloaded and verified
+ensc   -> epoch is: 100, loss is: 1.6400, NMI is: 0.5677, ARI is: 0.3350, ACC is: 0.4713
+kmeans -> epoch is: 100, loss is: 1.6400, NMI is: 0.5408, ARI is: 0.2605, ACC is: 0.5144
+Files already downloaded and verified
+ensc   -> epoch is: 105, loss is: 1.6713, NMI is: 0.5811, ARI is: 0.3832, ACC is: 0.5278
+kmeans -> epoch is: 105, loss is: 1.6713, NMI is: 0.5391, ARI is: 0.2525, ACC is: 0.4661
+Files already downloaded and verified
+ensc   -> epoch is: 110, loss is: 1.6616, NMI is: 0.5777, ARI is: 0.3861, ACC is: 0.5335
+kmeans -> epoch is: 110, loss is: 1.6616, NMI is: 0.5470, ARI is: 0.3188, ACC is: 0.5359
+Files already downloaded and verified
+ensc   -> epoch is: 115, loss is: 1.6954, NMI is: 0.5645, ARI is: 0.3445, ACC is: 0.4811
+kmeans -> epoch is: 115, loss is: 1.6954, NMI is: 0.5736, ARI is: 0.3332, ACC is: 0.5950
+Files already downloaded and verified
+ensc   -> epoch is: 120, loss is: 1.6693, NMI is: 0.5849, ARI is: 0.4141, ACC is: 0.5696
+kmeans -> epoch is: 120, loss is: 1.6693, NMI is: 0.5491, ARI is: 0.3192, ACC is: 0.5368
+Files already downloaded and verified
+ensc   -> epoch is: 125, loss is: 1.6077, NMI is: 0.5832, ARI is: 0.3948, ACC is: 0.5374
+kmeans -> epoch is: 125, loss is: 1.6077, NMI is: 0.4346, ARI is: 0.1229, ACC is: 0.3847
+Files already downloaded and verified
+ensc   -> epoch is: 130, loss is: 1.6937, NMI is: 0.5871, ARI is: 0.4216, ACC is: 0.5671
+kmeans -> epoch is: 130, loss is: 1.6937, NMI is: 0.5265, ARI is: 0.2888, ACC is: 0.5377
+Files already downloaded and verified
+ensc   -> epoch is: 135, loss is: 1.5966, NMI is: 0.5664, ARI is: 0.3472, ACC is: 0.4908
+kmeans -> epoch is: 135, loss is: 1.5966, NMI is: 0.3704, ARI is: 0.0789, ACC is: 0.3098
+Files already downloaded and verified
+ensc   -> epoch is: 140, loss is: 1.7124, NMI is: 0.5803, ARI is: 0.3899, ACC is: 0.5451
+kmeans -> epoch is: 140, loss is: 1.7124, NMI is: 0.5120, ARI is: 0.2452, ACC is: 0.4468
+Files already downloaded and verified
+ensc   -> epoch is: 145, loss is: 1.6270, NMI is: 0.5528, ARI is: 0.3292, ACC is: 0.4817
+kmeans -> epoch is: 145, loss is: 1.6270, NMI is: 0.5248, ARI is: 0.2709, ACC is: 0.5014
+Files already downloaded and verified
+ensc   -> epoch is: 150, loss is: 1.7493, NMI is: 0.5658, ARI is: 0.3406, ACC is: 0.4809
+kmeans -> epoch is: 150, loss is: 1.7493, NMI is: 0.4629, ARI is: 0.1892, ACC is: 0.3598
+Files already downloaded and verified
+ensc   -> epoch is: 155, loss is: 1.6707, NMI is: 0.5669, ARI is: 0.3151, ACC is: 0.5043
+kmeans -> epoch is: 155, loss is: 1.6707, NMI is: 0.4236, ARI is: 0.1158, ACC is: 0.3881
+Files already downloaded and verified
+ensc   -> epoch is: 160, loss is: 1.6774, NMI is: 0.5533, ARI is: 0.3216, ACC is: 0.4930
+kmeans -> epoch is: 160, loss is: 1.6774, NMI is: 0.5001, ARI is: 0.2074, ACC is: 0.4342
+Files already downloaded and verified
+ensc   -> epoch is: 165, loss is: 1.6952, NMI is: 0.5679, ARI is: 0.3106, ACC is: 0.5020
+kmeans -> epoch is: 165, loss is: 1.6952, NMI is: 0.4705, ARI is: 0.2335, ACC is: 0.3965
+Files already downloaded and verified
+ensc   -> epoch is: 170, loss is: 1.6044, NMI is: 0.5579, ARI is: 0.3000, ACC is: 0.4361
+kmeans -> epoch is: 170, loss is: 1.6044, NMI is: 0.5039, ARI is: 0.2036, ACC is: 0.4465
+Files already downloaded and verified
+ensc   -> epoch is: 175, loss is: 1.7069, NMI is: 0.5320, ARI is: 0.3182, ACC is: 0.4368
+kmeans -> epoch is: 175, loss is: 1.7069, NMI is: 0.4670, ARI is: 0.2091, ACC is: 0.3728
+Files already downloaded and verified
+ensc   -> epoch is: 180, loss is: 1.6751, NMI is: 0.5261, ARI is: 0.3074, ACC is: 0.4167
+kmeans -> epoch is: 180, loss is: 1.6751, NMI is: 0.3700, ARI is: 0.0758, ACC is: 0.3214
+Files already downloaded and verified
+ensc   -> epoch is: 185, loss is: 1.7416, NMI is: 0.5440, ARI is: 0.2826, ACC is: 0.4640
+kmeans -> epoch is: 185, loss is: 1.7416, NMI is: 0.3283, ARI is: 0.0528, ACC is: 0.3259
