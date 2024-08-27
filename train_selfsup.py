@@ -122,7 +122,7 @@ parser.add_argument('--gam', type=int, default=300,
 parser.add_argument('--tau', type=float, default=1.0,
                     help='tau paramter for subspace clustering (default: 1.0)')
 parser.add_argument("--verbose", type=bool, default=True)
-parser.add_argument("--is_train_set", type=bool, default=True)
+parser.add_argument("--is_train_set", type=bool, default=False)
 args = parser.parse_args()
 
 
