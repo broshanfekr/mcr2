@@ -78,11 +78,11 @@ def test_step(net, transforms, args):
 
 
 parser = argparse.ArgumentParser(description='Unsupervised Learning')
-parser.add_argument('--arch', type=str, default='resnet18ctrl',
+parser.add_argument('--arch', type=str, default='resnet18stl',
                     help='architecture for deep neural network (default: resnet18, clip)')
 parser.add_argument('--fd', type=int, default=128,
                     help='dimension of feature dimension (default: 32)')
-parser.add_argument('--data', type=str, default='cifar10',
+parser.add_argument('--data', type=str, default='stl10', # 'cifar10', # ,
                     help='dataset for training (default: CIFAR10, sampled_cifar10)')
 parser.add_argument('--epo', type=int, default=200,
                     help='number of epochs for training (default: 50)')
@@ -104,7 +104,7 @@ parser.add_argument('--eps', type=float, default=0.5,
                     help='eps squared (default: 2)')
 parser.add_argument('--tail', type=str, default='',
                     help='extra information to add to folder name')
-parser.add_argument('--transform', type=str, default='cifar',
+parser.add_argument('--transform', type=str, default='stl10',
                     help='transform applied to trainset (default: default, sampled_cifar')
 parser.add_argument('--sampler', type=str, default='random',
                     help='sampler used in augmentloader (default: random')

@@ -95,7 +95,7 @@ def load_trainset(name, transform=None, train=True, path="./data/"):
                                               download=True, transform=transform)
         trainset.num_classes = 10
     elif _name == "stl10":
-        trainset = torchvision.datasets.STL10(root=os.path.join(path, "stl10"), split='train', 
+        trainset = torchvision.datasets.STL10(root=os.path.join(path, "stl10"), split='test', 
                                               transform=transform, download=True)
         testset = torchvision.datasets.STL10(root=os.path.join(path, "stl10"), split='test', 
                                              transform=transform, download=True)
