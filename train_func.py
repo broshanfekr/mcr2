@@ -102,6 +102,7 @@ def load_trainset(name, transform=None, train=True, path="./data/"):
         trainset.num_classes = 10
         testset.num_classes = 10
         if not train:
+            testset.targets = testset.labels
             return testset
         else:
             trainset.data = np.concatenate([trainset.data, testset.data])
