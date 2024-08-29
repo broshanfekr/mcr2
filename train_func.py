@@ -12,6 +12,7 @@ from torchvision.transforms import Compose, Resize, CenterCrop, ToTensor, Normal
 
 from cluster import ElasticNetSubspaceClustering, clustering_accuracy
 import utils
+from PIL import Image
 
 import MyDataset
 
@@ -94,6 +95,11 @@ def load_trainset(name, transform=None, train=True, path="./data/"):
         trainset = torchvision.datasets.MNIST(root=os.path.join(path, "mnist"), train=train, 
                                               download=True, transform=transform)
         trainset.num_classes = 10
+    elif _name == "fashionmnist":
+        trainset = torchvision.datasets.FashionMNIST(os.path.join(path, "fashionmnist"), False, download=True)
+        trainset.labels = trainset.targets
+        trainset.num_classes = 10
+
     elif _name == "stl10":
         trainset = torchvision.datasets.STL10(root=os.path.join(path, "stl10"), split='test', 
                                               transform=transform, download=True)
