@@ -96,7 +96,7 @@ def load_trainset(name, transform=None, train=True, path="./data/"):
                                               download=True, transform=transform)
         trainset.num_classes = 10
     elif _name == "fashionmnist":
-        trainset = torchvision.datasets.FashionMNIST(os.path.join(path, "fashionmnist"), False, download=True)
+        trainset = torchvision.datasets.FashionMNIST(os.path.join(path, "fashionmnist"), False, download=True, transform=transform)
         trainset.labels = trainset.targets
         trainset.num_classes = 10
 
