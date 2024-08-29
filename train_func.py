@@ -216,7 +216,7 @@ def load_checkpoint(model_dir, epoch=None, eval_=False):
         ckpt_dir = os.path.join(model_dir, 'checkpoints')
         epochs = [int(e[11:-3]) for e in os.listdir(ckpt_dir) if e[-3:] == ".pt"]
         epoch = np.sort(epochs)[-1]
-    ckpt_path = os.path.join(model_dir, 'checkpoints', 'model-epoch{}.pt'.format(epoch))
+    ckpt_path = os.path.join(model_dir, 'checkpoints', 'model-epochbest.pt')# 'model-epoch{}.pt'.format(epoch))
     params = utils.load_params(model_dir)
     print('Loading checkpoint: {}'.format(ckpt_path))
     state_dict = torch.load(ckpt_path)
