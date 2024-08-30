@@ -2,7 +2,7 @@ import warnings
 import math
 import numpy as np
 import progressbar
-# import spams
+import spams
 import time
 import os
 from scipy import sparse
