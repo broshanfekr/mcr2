@@ -84,7 +84,7 @@ parser.add_argument('--fd', type=int, default=128,
                     help='dimension of feature dimension (default: 32)')
 parser.add_argument('--data', type=str, default='fashionmnist', # 'cifar10', # ,
                     help='dataset for training (default: CIFAR10, sampled_cifar10)')
-parser.add_argument('--epo', type=int, default=200,
+parser.add_argument('--epo', type=int, default=150,
                     help='number of epochs for training (default: 50)')
 parser.add_argument('--bs', type=int, default=1000,
                     help='input batch size for training (default: 1000)')
