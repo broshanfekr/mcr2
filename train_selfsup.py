@@ -202,9 +202,12 @@ if __name__ == "__main__":
             row_text = "kmeans -> epoch is: {}, loss is: {:.4f}, NMI is: {:.4f}, ARI is: {:.4f}, ACC is: {:.4f}"
             print(row_text.format(epoch, loss.item(), kmeans_res["nmi"], kmeans_res["ari"], kmeans_res["acc"]))
 
+            print()
+
             if ensc_res["nmi"] > best_nmi:
                 best_nmi = best_nmi
                 utils.save_ckpt(model_dir, net, epoch="best")
+            utils.save_ckpt(model_dir, net, epoch="last")
             
         scheduler.step()
 

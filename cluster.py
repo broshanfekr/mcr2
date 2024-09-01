@@ -665,7 +665,7 @@ def ensc(args, train_features, train_labels, test_features=None, test_labels=Non
         tau (float): tau parameter in EnSC
 
     """
-    clustermd = ElasticNetSubspaceClustering(n_clusters=args.n, gamma=args.gam, tau=args.tau)
+    clustermd = ElasticNetSubspaceClustering(n_clusters=args.n, gamma=args.gam, tau=args.tau, algorithm="lasso_lars")
     clustermd.fit(train_features)
     plabels = clustermd.labels_
     acc = clustering_accuracy(train_labels, plabels)
