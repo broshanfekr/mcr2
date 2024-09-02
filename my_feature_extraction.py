@@ -101,8 +101,9 @@ def ensc(args, train_features, train_labels):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Evaluation')
-    parser.add_argument('--model_dir', type=str, default="saved_models/selfsup_resnet18ctrl+128_cifar10_epo200_bs1000_aug50+cifar_lr0.1_mom0.9_wd0.0005_gam120.0_gam20.05_eps0.5"
+    parser.add_argument('--model_dir', type=str, default="saved_models/cifar10_test/selfsup_resnet18ctrl+128_cifar10_epo200_bs1000_aug50+cifar_lr0.1_mom0.9_wd0.0005_gam120.0_gam20.05_eps0.5"
                         ,help='base directory for saving PyTorch model.')
+    
     parser.add_argument('--svm', help='evaluate using SVM', action='store_true')
     parser.add_argument('--knn', help='evaluate using kNN measuring cosine similarity', action='store_true')
     parser.add_argument('--nearsub', help='evaluate using Nearest Subspace', action='store_true')
@@ -118,7 +119,7 @@ if __name__ == '__main__':
                         help='tau paramter for subspace clustering (default: 1.0)')
     parser.add_argument('--n_comp', type=int, default=30, help='number of components for PCA (default: 30)')
     parser.add_argument('--save', action='store_true', help='save labels')
-    parser.add_argument('--data_dir', default='./data/', help='path to dataset')
+    parser.add_argument('--data_dir', default='../data/', help='path to dataset')
     args = parser.parse_args()
 
     ## load model
@@ -128,9 +129,11 @@ if __name__ == '__main__':
     
     # get train features and labels
     train_transforms = tf.load_transforms('test')
-    trainset = tf.load_trainset(params['data'], train_transforms, train=True, path=args.data_dir)
+
+    trainset = tf.load_trainset(params['data'], train_transforms, train=False, path=args.data_dir)
     if 'lcr' in params.keys(): # supervised corruption case
         trainset = tf.corrupt_labels(params['corrupt'])(trainset, params['lcr'], params['lcs'])
+        
     new_labels = trainset.targets
     trainloader = DataLoader(trainset, batch_size=200)
     train_features, train_labels = tf.get_features(net, trainloader)
@@ -138,18 +141,18 @@ if __name__ == '__main__':
     train_features_np = train_features.numpy()
     train_labels_np = train_labels.numpy()
 
-    np.save("cifar10-features-train.npy", train_features_np)
-    np.save("cifar10-labels-train.npy", train_labels_np)
+    np.save("output_feature/cifar10-features-test.npy", train_features_np)
+    np.save("output_feature/cifar10-labels-test.npy", train_labels_np)
 
 
-    # get test features and labels
-    test_transforms = tf.load_transforms('test')
-    testset = tf.load_trainset(params['data'], test_transforms, train=False)
-    testloader = DataLoader(testset, batch_size=200)
-    test_features, test_labels = tf.get_features(net, testloader)
+    # # get test features and labels
+    # test_transforms = tf.load_transforms('test')
+    # testset = tf.load_trainset(params['data'], test_transforms, train=False)
+    # testloader = DataLoader(testset, batch_size=200)
+    # test_features, test_labels = tf.get_features(net, testloader)
 
-    np.save("cifar10-features-test.npy", train_features_np)
-    np.save("cifar10-labels-test.npy", train_labels_np)
+    # np.save("cifar10-features-test.npy", train_features_np)
+    # np.save("cifar10-labels-test.npy", train_labels_np)
 
     if args.svm:
         svm(args, train_features, train_labels, test_features, test_labels)

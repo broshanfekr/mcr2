@@ -66,15 +66,15 @@ def test_step(net, transforms, args):
     args.n = num_classes
     args.save = False
 
-    ensc_res, ensc_plabels = cluster.ensc(args=args, train_features=features, train_labels=labels)
-    kmeans_res, kmeans_plabels = cluster.kmeans(args=args, train_features=features, train_labels=labels)
+    ensc_res, ensc_plabels = cluster.ensc(args=args, train_features=features.copy(), train_labels=labels.copy())
+    kmeans_res, kmeans_plabels = cluster.kmeans(args=args, train_features=features.copy(), train_labels=labels.copy())
 
     # sc = SpectralClustering(n_clusters=num_classes, assign_labels='discretize').fit(features)
     # z_based_label_list = sc.labels_
     
     # nmi = normalized_mutual_info_score(labels, z_based_label_list)
         
-    return ensc_res, kmeans_res
+    return ensc_res, kmeans_res, features, labels
 
 
 parser = argparse.ArgumentParser(description='Unsupervised Learning')
@@ -196,7 +196,8 @@ if __name__ == "__main__":
             utils.save_state(model_dir, epoch, step, loss.item(), *loss_empi, *loss_theo)
         
         if epoch % 5 == 0:
-            ensc_res, kmeans_res = test_step(net, transforms_for_orig_data, args=args)    
+            ensc_res, kmeans_res, features, labels = test_step(net, transforms_for_orig_data, args=args)
+
             row_text = "ensc   -> epoch is: {}, loss is: {:.4f}, NMI is: {:.4f}, ARI is: {:.4f}, ACC is: {:.4f}"
             print(row_text.format(epoch, loss.item(), ensc_res["nmi"], ensc_res["ari"], ensc_res["acc"]))
 
@@ -208,11 +209,15 @@ if __name__ == "__main__":
             if ensc_res["nmi"] > best_nmi:
                 best_nmi = best_nmi
                 utils.save_ckpt(model_dir, net, epoch="best")
+                np.save(os.path.join(model_dir, "{}_features.npy".format(args.data)), features)
+                np.save(os.path.join(model_dir, "{}_labels.npy".format(args.data)), labels)
+
+
             utils.save_ckpt(model_dir, net, epoch="last")
             
         scheduler.step()
 
-    ensc_res, kmeans_res = test_step(net, transforms_for_orig_data, args=args)    
+    ensc_res, kmeans_res, features, labels = test_step(net, transforms_for_orig_data, args=args)    
     row_text = "ensc   -> epoch is: {}, loss is: {:.4f}, NMI is: {:.4f}, ARI is: {:.4f}, ACC is: {:.4f}"
     print(row_text.format(epoch, loss.item(), ensc_res["nmi"], ensc_res["ari"], ensc_res["acc"]))
 
