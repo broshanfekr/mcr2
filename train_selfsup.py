@@ -79,11 +79,11 @@ def test_step(net, transforms, args):
 
 parser = argparse.ArgumentParser(description='Unsupervised Learning')
 
-parser.add_argument('--arch', type=str, default='resnet18stl',
+parser.add_argument('--arch', type=str, default='resnet18ctrl',
                     help='architecture for deep neural network (default: resnet18, clip)')
-parser.add_argument('--data', type=str, default='stl10', # 'cifar10', # ,
+parser.add_argument('--data', type=str, default='cifar100', # 'cifar10', # ,
                     help='dataset for training (default: CIFAR10, sampled_cifar10)')
-parser.add_argument('--transform', type=str, default='stl10',
+parser.add_argument('--transform', type=str, default='cifar',
                     help='transform applied to trainset (default: default, sampled_cifar')
 
 
