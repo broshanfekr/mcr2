@@ -79,11 +79,11 @@ def test_step(net, transforms, args):
 
 parser = argparse.ArgumentParser(description='Unsupervised Learning')
 
-parser.add_argument('--arch', type=str, default='resnet18ctrl',
+parser.add_argument('--arch', type=str, default='ResNet10MNIST',
                     help='architecture for deep neural network (default: resnet18, clip)')
-parser.add_argument('--data', type=str, default='cifar100', # 'cifar10', # ,
+parser.add_argument('--data', type=str, default='fashionmnist', # 'cifar10', # ,
                     help='dataset for training (default: CIFAR10, sampled_cifar10)')
-parser.add_argument('--transform', type=str, default='cifar',
+parser.add_argument('--transform', type=str, default='fashionmnist',
                     help='transform applied to trainset (default: default, sampled_cifar')
 
 
@@ -211,6 +211,7 @@ if __name__ == "__main__":
                 utils.save_ckpt(model_dir, net, epoch="best")
                 np.save(os.path.join(model_dir, "{}_features.npy".format(args.data)), features)
                 np.save(os.path.join(model_dir, "{}_labels.npy".format(args.data)), labels)
+                save_var(os.path.join(model_dir, "{}_feature_label.pckl".format(args.data)), [features, labels])
 
 
             utils.save_ckpt(model_dir, net, epoch="last")
